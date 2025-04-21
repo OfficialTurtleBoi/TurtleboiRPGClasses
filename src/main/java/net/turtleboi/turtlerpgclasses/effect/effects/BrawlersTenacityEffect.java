@@ -46,7 +46,7 @@ public class BrawlersTenacityEffect extends MobEffect {
         super.removeAttributeModifiers(entity, attributeMap, amplifier);
         if (entity instanceof Player player) {
             new BrawlersTenacityTalent().removeEffectModifier(player, "brawlerstenacity");
-            player.level.playSound(null, player.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0f, 1.0f);
+            player.level().playSound(null, player.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0f, 1.0f);
             //player.sendSystemMessage(Component.literal("Damage bonus lost...")); //debug code
         }
     }

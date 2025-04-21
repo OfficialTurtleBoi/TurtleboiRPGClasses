@@ -31,7 +31,6 @@ public class DivineSanctuaryC2SPacket {
         context.enqueueWork(() -> {
             // We're on the server :)
             ServerPlayer player = context.getSender();
-            ServerLevel level = player.getLevel();
             if (player == null) return;
             player.getCapability(PlayerResourceProvider.PLAYER_RESOURCE).ifPresent(playerResource -> {
                 ModNetworking.sendToPlayer(

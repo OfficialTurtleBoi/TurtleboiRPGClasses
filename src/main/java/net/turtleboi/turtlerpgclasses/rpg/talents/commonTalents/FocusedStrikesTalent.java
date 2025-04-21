@@ -73,11 +73,11 @@ public class FocusedStrikesTalent extends Talent {
 
     public void playHitSound(Player player, int currentBonus) {
         float pitch = basePitch * (float) Math.pow(pitchIncrement, currentBonus);
-        player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.5f, pitch);
+        player.level().playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.5f, pitch);
     }
 
     public void playUpgradeSound(Player player, int currentBonus) {
         float pitch = basePitch * (float) Math.pow(pitchIncrement, currentBonus);
-        player.level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, pitch);
+        player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, pitch);
     }
 }

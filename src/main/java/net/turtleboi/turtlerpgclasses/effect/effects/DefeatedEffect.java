@@ -15,7 +15,7 @@ public class DefeatedEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!entity.level.isClientSide() && entity instanceof Player player) {
+        if (!entity.level().isClientSide() && entity instanceof Player player) {
             player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(playerAbility ->{
                 if (!playerAbility.isRallyTriggered()) {
                     playerAbility.setRallyTriggered(true);

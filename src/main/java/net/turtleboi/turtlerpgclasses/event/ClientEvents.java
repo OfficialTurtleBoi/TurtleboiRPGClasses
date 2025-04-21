@@ -1,13 +1,18 @@
 package net.turtleboi.turtlerpgclasses.event;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
@@ -19,6 +24,7 @@ import net.turtleboi.turtlerpgclasses.client.ui.ClassSelectionScreen;
 import net.turtleboi.turtlerpgclasses.client.ui.cooldowns.CooldownOverlay;
 import net.turtleboi.turtlerpgclasses.client.ui.resources.ResourceOverlay;
 import net.turtleboi.turtlerpgclasses.client.ui.talenttrees.TalentScreen;
+import net.turtleboi.turtlerpgclasses.effect.ModEffects;
 import net.turtleboi.turtlerpgclasses.network.ModNetworking;
 import net.turtleboi.turtlerpgclasses.network.packet.abilities.*;
 import net.turtleboi.turtlerpgclasses.rpg.talents.warriorTalents.active.GuardiansOathTalent;
@@ -69,21 +75,22 @@ public class ClientEvents {
 
         @SubscribeEvent
         public static void onRenderGuiOverlay(RenderGuiOverlayEvent.Post event) {
-            if (showChargeCancelMessage) {
-                PoseStack poseStack = event.getPoseStack();
-                Minecraft minecraft = Minecraft.getInstance();
-                int screenWidth = minecraft.getWindow().getGuiScaledWidth();
-                int screenHeight = minecraft.getWindow().getGuiScaledHeight();
-                KeyMapping sneakKey = minecraft.options.keyShift;
-                String sneakKeyName = sneakKey.getTranslatedKeyMessage().getString();
-                String cancelMessage = "Press " + sneakKeyName + " to cancel Charge";
+            if (!showChargeCancelMessage) return;
 
-                int xPosition = screenWidth / 2;
-                int yPosition = screenHeight / 2 + 30;
+            GuiGraphics guiGraphics = event.getGuiGraphics();
+            Window window = event.getWindow();
+            int scaledWidth = window.getGuiScaledWidth();
+            int scaledHeight = window.getGuiScaledHeight();
 
+            Minecraft minecraft = Minecraft.getInstance();
+            KeyMapping sneakKey = minecraft.options.keyShift;
+            String sneakKeyName = sneakKey.getTranslatedKeyMessage().getString();
+            String msg = "Press " + sneakKeyName + " to cancel Charge";
 
-                GuiComponent.drawCenteredString(poseStack, minecraft.font, cancelMessage, xPosition, yPosition, 0xFFFFFF);
-            }
+            int x = scaledWidth  / 2;
+            int y = scaledHeight / 2 + 30;
+
+            guiGraphics.drawCenteredString(minecraft.font, msg, x, y, 0xFFFFFF);
         }
     }
 
@@ -94,23 +101,34 @@ public class ClientEvents {
         public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
             Player player = event.getEntity();
             PoseStack poseStack = event.getPoseStack();
-            float baseFollowRange = (float) player.getAttributeBaseValue(Attributes.FOLLOW_RANGE);
-            float currentFollowRange = (float) player.getAttributeValue(Attributes.FOLLOW_RANGE);
+            MultiBufferSource bufferSource = event.getMultiBufferSource();
 
-            // Calculate transparency based on follow range
-            float alpha = 1.0F; // Fully opaque
-            if (baseFollowRange > 0) {
-                float followRangePercentage = currentFollowRange / baseFollowRange;
-                alpha = Math.max(0.2F, Math.min(1.0F, 0.5F + followRangePercentage * 0.5F));
+            // Check if the player has the custom Stealthed effect
+            if (player.hasEffect(ModEffects.STEALTHED.get())) {
+                // Clone the pose stack for rendering the translucent player separately
+                PoseStack newPoseStack = new PoseStack();
+                newPoseStack.mulPoseMatrix(poseStack.last().pose());  // Copy original pose to new PoseStack
+                newPoseStack.mulPose(Axis.YP.rotationDegrees(-player.getYRot()));
+                newPoseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
+                poseStack.scale( 1.05F, 1.05F, 1.05F);
+                // Apply some transformation to distinguish the copy if necessary (optional)
+                newPoseStack.translate(0, -player.getBbHeight() + 0.3, 0);  // Slightly offset to avoid overlap (optional)
+
+                // Set the transparency level
+                float alpha = 0.35F;  // 35% transparent
+
+                // Retrieve the player's texture (you can modify or add custom textures)
+                ResourceLocation playerTexture = Minecraft.getInstance().player.getSkinTextureLocation();
+
+                // Render the translucent player copy with reduced alpha
+                VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.entityTranslucent(playerTexture));
+                event.getRenderer().getModel().renderToBuffer(
+                        newPoseStack, vertexConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
+                        1.0F, 1.0F, 1.0F, alpha
+                );
+                //event.setCanceled(true);
+                // Don't cancel the event; this ensures the original player model is rendered as usual
             }
-
-            // Apply transparency
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
-
-            // Render the player with the modified alpha
-            poseStack.pushPose();
         }
 
         @SubscribeEvent
@@ -121,15 +139,10 @@ public class ClientEvents {
             MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
 
             if (new WarlordsPresenceTalent().isActive(player)) {
-                AuraRenderer.renderAura(player, poseStack, event.getPartialTick(), 2);
+                AuraRenderer.renderAura(player, poseStack, bufferSource, event.getPartialTick(), 2);
             } else if (new GuardiansOathTalent().isActive(player)){
-                AuraRenderer.renderAura(player, poseStack, event.getPartialTick(), 1);
+                AuraRenderer.renderAura(player, poseStack, bufferSource, event.getPartialTick(), 1);
             }
-
-            RenderSystem.disableBlend();
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-            poseStack.popPose();
             bufferSource.endBatch();
         }
 

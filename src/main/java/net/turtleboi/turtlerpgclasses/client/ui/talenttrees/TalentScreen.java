@@ -2,6 +2,7 @@ package net.turtleboi.turtlerpgclasses.client.ui.talenttrees;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -163,20 +164,21 @@ public class TalentScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         //System.out.println("Rendering TalentScreen..."); //debug code
-        this.renderBackground(poseStack);
+        this.renderBackground(guiGraphics);
         for (TalentTree tree : talentTrees) {
-            tree.render(poseStack, mouseX, mouseY, partialTicks);
+            tree.render(guiGraphics, mouseX, mouseY, partialTicks);
             //System.out.println("Rendered a TalentTree: " + tree.getClass().getSimpleName()); //debug code
         }
         for (TalentTree tree : talentTrees) {
-            tree.renderTooltips(poseStack, mouseX, mouseY);
+            tree.renderTooltips(guiGraphics.pose(), mouseX, mouseY);
         }
+
         if (talentPointAllocator != null) {
-            talentPointAllocator.render(poseStack, mouseX, mouseY, partialTicks);
+            talentPointAllocator.render(guiGraphics, mouseX, mouseY, partialTicks);
         }
-        super.render(poseStack, mouseX, mouseY, partialTicks);
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override

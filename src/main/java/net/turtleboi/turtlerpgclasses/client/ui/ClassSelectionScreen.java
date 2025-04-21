@@ -2,8 +2,13 @@ package net.turtleboi.turtlerpgclasses.client.ui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.turtleboi.turtlerpgclasses.capabilities.talents.TalentStates;
 import net.turtleboi.turtlerpgclasses.client.ui.cooldowns.CooldownOverlay;
@@ -15,6 +20,8 @@ import net.turtleboi.turtlerpgclasses.rpg.classes.Ranger;
 import net.turtleboi.turtlerpgclasses.rpg.classes.Warrior;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.ranges.Range;
+
+import java.util.function.Supplier;
 
 public class ClassSelectionScreen extends Screen {
 
@@ -44,7 +51,8 @@ public class ClassSelectionScreen extends Screen {
                 Component.translatable("class.warrior.description"),
                 Component.translatable("class.warrior.features"),
                 button ->
-                        handleClassSelection(warrior)
+                        handleClassSelection(warrior),
+                (Supplier<MutableComponent> def) -> Component.empty()
         ));
 
         startX += buttonWidth + buttonSpacing;
@@ -58,7 +66,8 @@ public class ClassSelectionScreen extends Screen {
                 Component.translatable("class.ranger.description"),
                 Component.translatable("class.ranger.features"),
                 button ->
-                        handleClassSelection(ranger)
+                        handleClassSelection(ranger),
+                (Supplier<MutableComponent> def) -> Component.empty()
         ));
 
         startX += buttonWidth + buttonSpacing;
@@ -72,7 +81,8 @@ public class ClassSelectionScreen extends Screen {
                 Component.translatable("class.mage.description"),
                 Component.translatable("class.mage.features"),
                 button ->
-                        handleClassSelection(mage)
+                        handleClassSelection(mage),
+                (Supplier<MutableComponent> def) -> Component.empty()
         ));
     }
 
@@ -96,9 +106,10 @@ public class ClassSelectionScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(poseStack);
-        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 20, 16777215);
-        super.render(poseStack, mouseX, mouseY, partialTicks);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(guiGraphics);
+        Font font = Minecraft.getInstance().font;
+        guiGraphics.drawCenteredString(font, this.title, this.width / 2, 20, 16777215);
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 }

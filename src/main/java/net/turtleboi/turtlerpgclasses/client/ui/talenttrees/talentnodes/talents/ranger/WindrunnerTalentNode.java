@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WindrunnerTalentNode extends ActiveTalentButton {
-    public WindrunnerTalentNode(TalentTree talentTree, Talent talent, int x, int y, int maxPoints, int requiredPoints, boolean alwaysActive, OnPress onPress) {
-        super(talentTree, talent, x, y, maxPoints, requiredPoints, alwaysActive, onPress);
+    public WindrunnerTalentNode(TalentTree talentTree, Talent talentClass, int x, int y, int maxPoints, int requiredPoints, boolean alwaysActive, OnPress onPress, CreateNarration createNarration) {
+        super(talentTree, talentClass, x, y, maxPoints, requiredPoints, alwaysActive, onPress, createNarration);
     }
 
     @Override

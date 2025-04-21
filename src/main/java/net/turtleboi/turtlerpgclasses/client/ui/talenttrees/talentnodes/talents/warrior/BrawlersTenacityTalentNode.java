@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BrawlersTenacityTalentNode extends PassiveTalentButton {
-    public BrawlersTenacityTalentNode(TalentTree talentTree, Talent talentClass, int x, int y, int maxPoints, int requiredPoints, boolean alwaysActive, OnPress onPress) {
-        super(talentTree, talentClass, x, y, maxPoints, requiredPoints, alwaysActive, onPress);
+    public BrawlersTenacityTalentNode(TalentTree talentTree, Talent talentClass, int x, int y, int maxPoints, int requiredPoints, boolean alwaysActive, OnPress onPress, CreateNarration createNarration) {
+        super(talentTree, talentClass, x, y, maxPoints, requiredPoints, alwaysActive, onPress, createNarration);
         this.talentClass = talentClass;
         this.maxPoints = maxPoints;
     }

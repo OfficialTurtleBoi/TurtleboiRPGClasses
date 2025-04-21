@@ -21,7 +21,7 @@ public class GuardiansOathEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!entity.level.isClientSide() && entity instanceof Player player) {
+        if (!entity.level().isClientSide() && entity instanceof Player player) {
             new GuardiansOathTalent().applyEffectAttributes(player);
         }
     }

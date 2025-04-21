@@ -1,6 +1,7 @@
 package net.turtleboi.turtlerpgclasses.client.ui.talenttrees;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 
 public class MageTalentTree extends TalentTree {
     public MageTalentTree(int posX, int posY, int width, int height, TalentScreen talentScreen) {
@@ -12,7 +13,7 @@ public class MageTalentTree extends TalentTree {
     }
 
     @Override
-    protected void drawConnectionsTexture(PoseStack poseStack) {
+    protected void drawConnectionsTexture(GuiGraphics guiGraphics) {
 
     }
 }

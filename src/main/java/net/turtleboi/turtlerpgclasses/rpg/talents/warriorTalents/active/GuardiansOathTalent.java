@@ -58,7 +58,7 @@ public class GuardiansOathTalent extends ActiveAbility {
     }
 
     public void applyGuardianOathEffects(Player player) {
-        Level level = player.level;
+        Level level = player.level();
         double radius = 5.0;
         AABB aabb = new AABB(player.blockPosition()).inflate(radius);
 
@@ -74,7 +74,7 @@ public class GuardiansOathTalent extends ActiveAbility {
     }
 
     private void applyBastionEffects(Player player) {
-        Level level = player.level;
+        Level level = player.level();
         double radius = 10.0;
         AABB aabb = new AABB(player.blockPosition()).inflate(radius);
 

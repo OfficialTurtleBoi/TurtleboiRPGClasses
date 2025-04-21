@@ -3,6 +3,7 @@ package net.turtleboi.turtlerpgclasses.client.ui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -24,7 +25,7 @@ public class InventoryOverlay {
 
             if (player == null) return;
 
-            PoseStack poseStack = event.getPoseStack();
+            GuiGraphics guiGraphics = event.getGuiGraphics();
 
             String classText = ClientClassData.getPlayerClass();
             String subclassText = ClientClassData.getPlayerSubclass();
@@ -40,8 +41,8 @@ public class InventoryOverlay {
             int classTextY = (screenHeight / 2) - 105;
             int subclassTextY = (screenHeight / 2) - 95;
 
-            font.draw(poseStack, classText, classTextX, classTextY, 0xFFFFFF);
-            font.draw(poseStack, subclassText, subclassTextX, subclassTextY, 0xFFFFFF);
+            guiGraphics.drawString(font, classText, classTextX, classTextY, 0xFFFFFF);
+            guiGraphics.drawString(font, subclassText, subclassTextX, subclassTextY, 0xFFFFFF);
         }
     }
 }

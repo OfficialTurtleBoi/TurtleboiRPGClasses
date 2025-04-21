@@ -22,6 +22,7 @@ import net.turtleboi.turtlerpgclasses.effect.ModEffects;
 import net.turtleboi.turtlerpgclasses.entity.ModEntities;
 import net.turtleboi.turtlerpgclasses.event.CooldownResetListener;
 import net.turtleboi.turtlerpgclasses.init.ModAttributes;
+import net.turtleboi.turtlerpgclasses.item.ModCreativeModeTab;
 import net.turtleboi.turtlerpgclasses.item.ModItems;
 import net.turtleboi.turtlerpgclasses.network.ModNetworking;
 import net.turtleboi.turtlerpgclasses.potion.ModPotions;
@@ -36,6 +37,7 @@ public class TurtleRPGClasses {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ModItems.register(eventBus);
+        ModCreativeModeTab.register(eventBus);
 
         ModEntities.register(eventBus);
         ModEffects.register(eventBus);

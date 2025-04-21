@@ -4,7 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -49,63 +50,59 @@ public class CooldownSlot {
         return slotSpacing;
     }
 
-    public void render(PoseStack poseStack, Player player) {
+    public void render(GuiGraphics guiGraphics, Player player) {
         if (ability == null) {
             return;
         }
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, slotTexture);
-        RenderSystem.enableBlend();
+        //RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        //RenderSystem.setShaderTexture(0, slotTexture);
+        //RenderSystem.enableBlend();
 
-        if (ability != null) {
-            boolean isOffCooldown = ability.abilityIsOffCooldown(player);
+        boolean isOffCooldown = ability.abilityIsOffCooldown(player);
 
-            if (isOffCooldown && !cooldownEndTimes.containsKey(ability)) {
-                cooldownEndTimes.put(ability, System.currentTimeMillis());
-            }
-
-            long currentTime = System.currentTimeMillis();
-            long cooldownEndTime = cooldownEndTimes.getOrDefault(ability, -1L);
-            long elapsedTimeSinceCooldownEnd = currentTime - cooldownEndTime;
-            boolean showGlow = cooldownEndTime != -1 && elapsedTimeSinceCooldownEnd <= instantRefreshFrameCount * frameDuration;
-
-            int frameIndex = showGlow ? (int) (elapsedTimeSinceCooldownEnd / frameDuration) + 1 : 0;
-            frameIndex = Math.min(frameIndex, instantRefreshFrameCount - 1);
-
-            int uvY = frameIndex * slotSize;
-            GuiComponent.blit(poseStack, xPos, yPos, 0, uvY, slotSize, slotSize, slotSize * 3, slotSize * instantRefreshFrameCount);
-
-            RenderSystem.setShaderTexture(0, ability.getAbilityIcon());
-            int iconX = xPos + (slotSize - iconSize) / 2;
-            int iconY = yPos + (slotSize - iconSize) / 2;
-            GuiComponent.blit(poseStack, iconX, iconY, 0, 0, iconSize, iconSize, iconSize, iconSize);
-
-            if (!isOffCooldown) {
-                cooldownEndTimes.remove(ability);
-                double cooldownProgress = ability.getCooldownProgress(player);
-                int cooldownHeight = (int) (iconSize * cooldownProgress);
-                int cooldownY = iconY + (iconSize - cooldownHeight);
-                GuiComponent.fill(poseStack, iconX, cooldownY, iconX + iconSize, iconY + iconSize, 0x77FFFFFF);
-            }
-
-            String keyName = keyBinding.getTranslatedKeyMessage().getString().toUpperCase();
-            int keyX = xPos + slotSize - 6;
-            int keyY = yPos + slotSize - 6;
-            drawKeyWithOutline(poseStack, keyName, keyX, keyY);
-        } else {
-            GuiComponent.blit(poseStack, xPos, yPos, slotSize, 0, slotSize, slotSize, slotSize * 3, slotSize * 2);
+        if (isOffCooldown && !cooldownEndTimes.containsKey(ability)) {
+            cooldownEndTimes.put(ability, System.currentTimeMillis());
         }
+
+        long currentTime = System.currentTimeMillis();
+        long cooldownEndTime = cooldownEndTimes.getOrDefault(ability, -1L);
+        long elapsedTimeSinceCooldownEnd = currentTime - cooldownEndTime;
+        boolean showGlow = cooldownEndTime != -1 && elapsedTimeSinceCooldownEnd <= instantRefreshFrameCount * frameDuration;
+
+        int frameIndex = showGlow ? (int) (elapsedTimeSinceCooldownEnd / frameDuration) + 1 : 0;
+        frameIndex = Math.min(frameIndex, instantRefreshFrameCount - 1);
+
+        int uvY = frameIndex * slotSize;
+        guiGraphics.blit(slotTexture, xPos, yPos, 0, uvY, slotSize, slotSize, slotSize * 3, slotSize * instantRefreshFrameCount);
+
+        //RenderSystem.setShaderTexture(0, ability.getAbilityIcon());
+        int iconX = xPos + (slotSize - iconSize) / 2;
+        int iconY = yPos + (slotSize - iconSize) / 2;
+        guiGraphics.blit(ability.getAbilityIcon(), iconX, iconY, 0, 0, iconSize, iconSize, iconSize, iconSize);
+
+        if (!isOffCooldown) {
+            cooldownEndTimes.remove(ability);
+            double cooldownProgress = ability.getCooldownProgress(player);
+            int cooldownHeight = (int) (iconSize * cooldownProgress);
+            int cooldownY = iconY + (iconSize - cooldownHeight);
+            guiGraphics.fill(iconX, cooldownY, iconX + iconSize, iconY + iconSize, 0x77FFFFFF);
+        }
+
+        String keyName = keyBinding.getTranslatedKeyMessage().getString().toUpperCase();
+        int keyX = xPos + slotSize - 6;
+        int keyY = yPos + slotSize - 6;
+        drawKeyWithOutline(guiGraphics, keyName, keyX, keyY);
 
         RenderSystem.disableBlend();
     }
 
-    private void drawKeyWithOutline(PoseStack poseStack, String keyName, int x, int y) {
-        Minecraft mc = Minecraft.getInstance();
-        mc.font.draw(poseStack, keyName, x + 1, y, 0x000000);
-        mc.font.draw(poseStack, keyName, x - 1, y, 0x000000);
-        mc.font.draw(poseStack, keyName, x, y + 1, 0x000000);
-        mc.font.draw(poseStack, keyName, x, y - 1, 0x000000);
-        mc.font.draw(poseStack, keyName, x, y, 0xFFFFFF);
+    private void drawKeyWithOutline(GuiGraphics guiGraphics, String keyName, int x, int y) {
+        Font font = Minecraft.getInstance().font;
+        guiGraphics.drawString(font, keyName, x + 1, y, 0x000000, false);
+        guiGraphics.drawString(font, keyName, x - 1, y, 0x000000, false);
+        guiGraphics.drawString(font, keyName, x, y + 1, 0x000000, false);
+        guiGraphics.drawString(font, keyName, x, y - 1, 0x000000, false);
+        guiGraphics.drawString(font, keyName, x, y, 0xFFFFFF, false);
     }
 }

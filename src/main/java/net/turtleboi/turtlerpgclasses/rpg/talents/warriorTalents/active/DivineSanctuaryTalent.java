@@ -81,7 +81,7 @@ public class DivineSanctuaryTalent extends ActiveAbility {
         domeEntity.setOwner(player);
         domeEntity.setPos(player.getX(), player.getY(), player.getZ());
         domeEntity.setYRot(player.getYRot());
-        player.level.addFreshEntity(domeEntity);
+        player.level().addFreshEntity(domeEntity);
         if (level instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(ParticleTypes.GLOW, player.getX(), player.getY(), player.getZ(), 100, 1.0, 1.0, 1.0, 0.1);
         }

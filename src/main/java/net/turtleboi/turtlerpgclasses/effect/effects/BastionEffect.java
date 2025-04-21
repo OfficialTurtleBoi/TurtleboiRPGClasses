@@ -28,7 +28,7 @@ public class BastionEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!entity.level.isClientSide() && entity instanceof Player player) {
+        if (!entity.level().isClientSide() && entity instanceof Player player) {
             new GuardiansOathTalent().applyBastionAttributes(player);
             applyAbsorption(player);
             applyHealing(player);
@@ -53,7 +53,7 @@ public class BastionEffect extends MobEffect {
     private void applyEnemyDebuff(Player player) {
         double radius = 3.0;
         AABB aabb = new AABB(player.blockPosition()).inflate(radius);
-        for (LivingEntity entity : player.level.getEntitiesOfClass(LivingEntity.class, aabb)) {
+        for (LivingEntity entity : player.level().getEntitiesOfClass(LivingEntity.class, aabb)) {
             MobCategory category = entity.getType().getCategory();
             if (entity != player && !(entity instanceof Player && PartyUtils.isAlly((ServerPlayer) player, (ServerPlayer) entity)) && !isAllowedCategory(category)) {
                 entity.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 20, 2));

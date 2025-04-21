@@ -2,6 +2,9 @@ package net.turtleboi.turtlerpgclasses.client.ui.talenttrees;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.turtleboi.turtlerpgclasses.TurtleRPGClasses;
 import net.turtleboi.turtlerpgclasses.client.ClientClassData;
@@ -15,8 +18,7 @@ import net.turtleboi.turtlerpgclasses.rpg.talents.warriorTalents.active.*;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static net.minecraft.client.gui.GuiComponent.blit;
+import java.util.function.Supplier;
 
 public class WarriorTalentTree extends TalentTree {
     private static final ResourceLocation WARRIOR_TREE_CONNECTIONS = new ResourceLocation(TurtleRPGClasses.MOD_ID, "textures/gui/talents/warrior_tree_connections.png");
@@ -26,9 +28,8 @@ public class WarriorTalentTree extends TalentTree {
     }
 
     @Override
-    protected void drawConnectionsTexture(PoseStack poseStack) {
-        RenderSystem.setShaderTexture(0, WARRIOR_TREE_CONNECTIONS);
-        blit(poseStack, this.connectionTextureX, this.connectionTextureY, 0, 0, 190, 350, 190, 350);
+    protected void drawConnectionsTexture(GuiGraphics guiGraphics) {
+        guiGraphics.blit(WARRIOR_TREE_CONNECTIONS, this.connectionTextureX, this.connectionTextureY, 0, 0, 190, 350, 190, 350);
     }
 
     @Override
@@ -44,7 +45,8 @@ public class WarriorTalentTree extends TalentTree {
                 1,
                 0,
                 ("Warrior".equals(className)),
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(warriorClassNode, TalentButton.TalentState.ACTIVE);
 
         // Tier 2
@@ -56,7 +58,8 @@ public class WarriorTalentTree extends TalentTree {
                 4,
                 0,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         MightyBlowsTalentNode warriorMightyBlowsTalent = new MightyBlowsTalentNode(
                 this,
                 new MightyBlowsTalent(),
@@ -65,7 +68,8 @@ public class WarriorTalentTree extends TalentTree {
                 4,
                 0,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(warriorVigorTalent, null, warriorClassNode);
         createTalentButton(warriorMightyBlowsTalent, null, warriorClassNode);
 
@@ -78,7 +82,8 @@ public class WarriorTalentTree extends TalentTree {
                 3,
                 1,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         SteadyFootingTalentNode warriorSteadyFootingTalent = new SteadyFootingTalentNode(
                 this,
                 new SteadyFootingTalent(),
@@ -87,7 +92,8 @@ public class WarriorTalentTree extends TalentTree {
                 3,
                 1,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         SwiftHandsTalentNode warriorSwiftHandsTalent = new SwiftHandsTalentNode(
                 this,
                 new SwiftHandsTalent(),
@@ -96,7 +102,8 @@ public class WarriorTalentTree extends TalentTree {
                 3,
                 1,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(warriorBattleHardenedTalent, null, warriorVigorTalent, warriorMightyBlowsTalent);
         createTalentButton(warriorSteadyFootingTalent, null, warriorVigorTalent, warriorMightyBlowsTalent);
         createTalentButton(warriorSwiftHandsTalent, null, warriorVigorTalent, warriorMightyBlowsTalent);
@@ -110,7 +117,8 @@ public class WarriorTalentTree extends TalentTree {
                 1,
                 10,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         pathOfTheJuggernautSubclassNode pathOfTheJuggernautSubclass = new pathOfTheJuggernautSubclassNode(
                 this,
                 new PathOfTheJuggernautSubclass(),
@@ -119,7 +127,8 @@ public class WarriorTalentTree extends TalentTree {
                 1,
                 10,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         pathOfThePaladinSubclassNode pathOfThePaladinSubclass = new pathOfThePaladinSubclassNode(
                 this,
                 new PathOfThePaladinSubclass(),
@@ -128,7 +137,8 @@ public class WarriorTalentTree extends TalentTree {
                 1,
                 10,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(pathOfTheBarbarianSubclass, null, warriorBattleHardenedTalent, warriorSteadyFootingTalent, warriorSwiftHandsTalent);
         createTalentButton(pathOfTheJuggernautSubclass, null, warriorBattleHardenedTalent, warriorSteadyFootingTalent, warriorSwiftHandsTalent);
         createTalentButton(pathOfThePaladinSubclass, null, warriorBattleHardenedTalent, warriorSteadyFootingTalent, warriorSwiftHandsTalent);
@@ -146,7 +156,8 @@ public class WarriorTalentTree extends TalentTree {
                 4,
                 12,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         SecondWindTalentNode warriorSecondWindTalent = new SecondWindTalentNode(
                 this,
                 new SecondWindTalent(),
@@ -155,7 +166,8 @@ public class WarriorTalentTree extends TalentTree {
                 5,
                 12,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         FocusedStrikesTalentNode warriorFocusedStrikesTalent = new FocusedStrikesTalentNode(
                 this,
                 new FocusedStrikesTalent(),
@@ -164,7 +176,8 @@ public class WarriorTalentTree extends TalentTree {
                 5,
                 12,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         MarathonerTalentNode warriorMarathonerTalent = new MarathonerTalentNode(
                 this,
                 new MarathonerTalent(),
@@ -173,7 +186,8 @@ public class WarriorTalentTree extends TalentTree {
                 4,
                 12,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(warriorQuickRecoveryTalent, null, pathOfTheBarbarianSubclass, pathOfTheJuggernautSubclass, pathOfThePaladinSubclass);
         createTalentButton(warriorSecondWindTalent, null, pathOfTheBarbarianSubclass, pathOfTheJuggernautSubclass, pathOfThePaladinSubclass);
         createTalentButton(warriorFocusedStrikesTalent, null, pathOfTheBarbarianSubclass, pathOfTheJuggernautSubclass, pathOfThePaladinSubclass);
@@ -191,7 +205,8 @@ public class WarriorTalentTree extends TalentTree {
                 5,
                 16,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         StaminaMasteryTalentNode warriorStaminaMasteryTalent = new StaminaMasteryTalentNode(
                 this,
                 new StaminaMasteryTalent(),
@@ -200,7 +215,8 @@ public class WarriorTalentTree extends TalentTree {
                 5,
                 16,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         BrawlersTenacityTalentNode warriorBrawlersTenacityTalent = new BrawlersTenacityTalentNode(
                 this,
                 new BrawlersTenacityTalent(),
@@ -209,7 +225,8 @@ public class WarriorTalentTree extends TalentTree {
                 5,
                 16,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(warriorLifeLeechTalent, null, warriorQuickRecoveryTalent, warriorSecondWindTalent, warriorFocusedStrikesTalent, warriorMarathonerTalent);
         createTalentButton(warriorStaminaMasteryTalent, null, warriorQuickRecoveryTalent, warriorSecondWindTalent, warriorFocusedStrikesTalent, warriorMarathonerTalent);
         createTalentButton(warriorBrawlersTenacityTalent, null, warriorQuickRecoveryTalent, warriorSecondWindTalent, warriorFocusedStrikesTalent, warriorMarathonerTalent);
@@ -226,7 +243,8 @@ public class WarriorTalentTree extends TalentTree {
                 1,
                 21,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         TauntTalentNode warriorTauntTalent = new TauntTalentNode(
                 this,
                 new TauntTalent(),
@@ -235,7 +253,8 @@ public class WarriorTalentTree extends TalentTree {
                 1,
                 21,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(warriorChargeTalent, null, warriorLifeLeechTalent, warriorStaminaMasteryTalent, warriorBrawlersTenacityTalent);
         createTalentButton(warriorTauntTalent, null, warriorLifeLeechTalent, warriorStaminaMasteryTalent, warriorBrawlersTenacityTalent);
 
@@ -251,7 +270,8 @@ public class WarriorTalentTree extends TalentTree {
                 3,
                 25,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         MomentumTalentNode warriorMomentumTalent = new MomentumTalentNode(
                 this,
                 new MomentumTalent(),
@@ -260,7 +280,8 @@ public class WarriorTalentTree extends TalentTree {
                 3,
                 25,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         VictoriousCryTalentNode warriorVictoriousCryTalent = new VictoriousCryTalentNode(
                 this,
                 new VictoriousCryTalent(),
@@ -269,7 +290,8 @@ public class WarriorTalentTree extends TalentTree {
                 3,
                 25,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         IntimidatingPresenceTalentNode warriorIntimidatingPresenceTalent = new IntimidatingPresenceTalentNode(
                 this,
                 new IntimidatingPresenceTalent(),
@@ -278,7 +300,8 @@ public class WarriorTalentTree extends TalentTree {
                 3,
                 25,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(warriorStampedeTalent, null, warriorChargeTalent);
         createTalentButton(warriorMomentumTalent, null, warriorChargeTalent);
         createTalentButton(warriorVictoriousCryTalent, null, warriorTauntTalent);
@@ -298,7 +321,8 @@ public class WarriorTalentTree extends TalentTree {
                 1,
                 28,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
 
         CombatVeteranTalentNode warriorCombatVeteranTalent = new CombatVeteranTalentNode(
                 this,
@@ -308,7 +332,8 @@ public class WarriorTalentTree extends TalentTree {
                 5,
                 28,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
 
         ExecuteTalentNode warriorExecuteTalent = new ExecuteTalentNode(
                 this,
@@ -318,7 +343,8 @@ public class WarriorTalentTree extends TalentTree {
                 1,
                 28,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
 
         createTalentButton(warriorColossusTalent, null, warriorStampedeTalent, warriorMomentumTalent, warriorVictoriousCryTalent, warriorIntimidatingPresenceTalent);
         createTalentButton(warriorCombatVeteranTalent, null, warriorStampedeTalent, warriorMomentumTalent, warriorVictoriousCryTalent, warriorIntimidatingPresenceTalent);
@@ -336,7 +362,8 @@ public class WarriorTalentTree extends TalentTree {
                 1,
                 40,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
 
         GuardiansOathTalentNode warriorGuardiansOathTalent = new GuardiansOathTalentNode(
                 this,
@@ -346,7 +373,8 @@ public class WarriorTalentTree extends TalentTree {
                 1,
                 40,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
 
         createTalentButton(warriorWarlordsPresenceTalent, null, warriorColossusTalent, warriorCombatVeteranTalent, warriorExecuteTalent);
         createTalentButton(warriorGuardiansOathTalent, null, warriorColossusTalent, warriorCombatVeteranTalent, warriorExecuteTalent);

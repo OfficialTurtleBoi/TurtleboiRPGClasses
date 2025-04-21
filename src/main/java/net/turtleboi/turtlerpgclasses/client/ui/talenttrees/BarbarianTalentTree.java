@@ -1,10 +1,15 @@
 package net.turtleboi.turtlerpgclasses.client.ui.talenttrees;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.turtleboi.turtlerpgclasses.client.ClientClassData;
 import net.turtleboi.turtlerpgclasses.client.ui.talenttrees.talentnodes.talents.barbarian.barbarianSubclassNode;
 import net.turtleboi.turtlerpgclasses.client.ui.talenttrees.talentnodes.TalentButton;
 import net.turtleboi.turtlerpgclasses.rpg.classes.subclasses.Barbarian;
+
+import java.util.function.Supplier;
 
 public class BarbarianTalentTree extends TalentTree {
     public BarbarianTalentTree(int posX, int posY, int width, int height, TalentScreen talentScreen) {
@@ -12,7 +17,7 @@ public class BarbarianTalentTree extends TalentTree {
     }
 
     @Override
-    protected void drawConnectionsTexture(PoseStack poseStack) {
+    protected void drawConnectionsTexture(GuiGraphics guiGraphics) {
 
     }
 
@@ -29,7 +34,8 @@ public class BarbarianTalentTree extends TalentTree {
                 1,
                 0,
                 ("Barbarian".equals(subclassName)),
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(barbarianSubclassNode, TalentButton.TalentState.ACTIVE);
     }
 }

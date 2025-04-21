@@ -1,6 +1,6 @@
 package net.turtleboi.turtlerpgclasses.network.packet.experience;
 
-import net.turtleboi.turtlecore.network.packet.experience.ExperienceHandler;
+import net.turtleboi.turtlecore.network.packet.util.experience.ExperienceHandler;
 import net.turtleboi.turtlerpgclasses.client.ui.talenttrees.TalentPointAllocator;
 
 public class TalentExperienceHandler implements ExperienceHandler {

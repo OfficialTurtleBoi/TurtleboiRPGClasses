@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -19,8 +20,8 @@ public class StatTalentButton extends TalentButton {
     private static final ResourceLocation TALENT_TREE_TEXTURES = new ResourceLocation(TurtleRPGClasses.MOD_ID, "textures/gui/talents/talent_widgets.png");
     protected Talent talentClass;
 
-    public StatTalentButton(TalentTree talentTree, Talent talentClass, int x, int y, int maxPoints, int requiredPoints, boolean alwaysActive, OnPress onPress) {
-        super(talentTree, talentClass.getTalentName(), x, y, 26, 26, maxPoints,  requiredPoints, Component.empty(), alwaysActive, onPress);
+    public StatTalentButton(TalentTree talentTree, Talent talentClass, int x, int y, int maxPoints, int requiredPoints, boolean alwaysActive, OnPress onPress, CreateNarration createNarration) {
+        super(talentTree, talentClass.getTalentName(), x, y, 26, 26, maxPoints,  requiredPoints, Component.empty(), alwaysActive, onPress, createNarration);
         this.talentClass = talentClass;
         this.maxPoints = maxPoints;
     }
@@ -29,12 +30,11 @@ public class StatTalentButton extends TalentButton {
         return talentClass.getIconTexture();
     }
 
-    public void drawTalentIcon(PoseStack poseStack, int x, int y) {
+    public void drawTalentIcon(GuiGraphics guiGraphics, int x, int y) {
         ResourceLocation customIconTexture = getIconTexture();
         if (customIconTexture != null) {
             Optional<Resource> resourceOptional = Minecraft.getInstance().getResourceManager().getResource(customIconTexture);
             if (resourceOptional.isPresent()) {
-            RenderSystem.setShaderTexture(0, customIconTexture);
             int iconX = x + (this.width - 16) / 2;
             int iconY = y + (this.height - 16) / 2;
 
@@ -43,15 +43,15 @@ public class StatTalentButton extends TalentButton {
             } else {
                 RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 1.0f);
             }
-            blit(poseStack, iconX, iconY, 0, 0, 16, 16, 16, 16);
+            guiGraphics.blit(customIconTexture, iconX, iconY, 0, 0, 16, 16, 16, 16);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             }
         }
     }
 
     @Override
-    public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        boolean isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        boolean isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
         int textureX = 78;
         int textureY = 104;
 
@@ -66,24 +66,25 @@ public class StatTalentButton extends TalentButton {
         }
 
         RenderSystem.setShaderTexture(0, TALENT_TREE_TEXTURES);
-        blit(poseStack, this.x, this.y, textureX, textureY, this.width, this.height, 104, 130);
-        drawTalentIcon(poseStack, this.x, this.y);
+        guiGraphics.blit(TALENT_TREE_TEXTURES, this.getX(), this.getY(), textureX, textureY, this.width, this.height, 104, 130);
+        drawTalentIcon(guiGraphics, this.getX(), this.getY());
         if (this.getState() == TalentState.ACTIVE && this.getCurrentPoints() >= 1 && this.maxPoints > 1) {
             String pointsText = getCurrentPoints() + "/" + maxPoints;
             Font font = Minecraft.getInstance().font;
             int textWidth = font.width(pointsText);
-            int textX = this.x + (this.width - textWidth) / 2;
-            int textY = (this.y + this.height) - 6;
+            int textX = this.getX() + (this.width - textWidth) / 2;
+            int textY = (this.getY() + this.height) - 6;
             int outlineColor = 0xFF154015;
             int textColor = 0xFF55FF55;
-            font.draw(poseStack, pointsText, textX - 1, textY, outlineColor);
-            font.draw(poseStack, pointsText, textX + 1, textY, outlineColor);
-            font.draw(poseStack, pointsText, textX, textY - 1, outlineColor);
-            font.draw(poseStack, pointsText, textX, textY + 1, outlineColor);
-            font.draw(poseStack, pointsText, textX, textY, textColor);
+            guiGraphics.drawString(font, pointsText, textX - 1, textY, outlineColor, false);
+            guiGraphics.drawString(font, pointsText, textX + 1, textY, outlineColor, false);
+            guiGraphics.drawString(font, pointsText, textX, textY - 1, outlineColor, false);
+            guiGraphics.drawString(font, pointsText, textX, textY + 1, outlineColor, false);
+            guiGraphics.drawString(font, pointsText, textX, textY, textColor, false);
         }
         setTooltipText(generateDynamicTooltip());
     }
+
     @Override
     public List<Component> generateDynamicTooltip() {
         return new ArrayList<>();

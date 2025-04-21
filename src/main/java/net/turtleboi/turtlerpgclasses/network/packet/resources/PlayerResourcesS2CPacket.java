@@ -1,6 +1,7 @@
 package net.turtleboi.turtlerpgclasses.network.packet.resources;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,17 +50,17 @@ public class PlayerResourcesS2CPacket {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
             // HERE WE ARE ON THE CLIENT :)
-            Minecraft minecraft = Minecraft.getInstance();
-            Player player = minecraft.player;
-            if (player != null){
-                //player.sendSystemMessage(Component.literal("Sending resource data!")); //debug code
-                ClientResourceData.setMaxStamina(maxStamina);
-                ClientResourceData.setMaxEnergy(maxEnergy);
-                ClientResourceData.setMaxMana(maxMana);
-                ClientResourceData.setStamina(currentStamina);
-                ClientResourceData.setEnergy(currentEnergy);
-                ClientResourceData.setMana(currentMana);
-            }
+            //Minecraft minecraft = Minecraft.getInstance();
+            //LocalPlayer player = minecraft.player;
+            //if (player != null){
+            //    //player.sendSystemMessage(Component.literal("Sending resource data!")); //debug code
+            //}
+            ClientResourceData.setMaxStamina(maxStamina);
+            ClientResourceData.setMaxEnergy(maxEnergy);
+            ClientResourceData.setMaxMana(maxMana);
+            ClientResourceData.setStamina(currentStamina);
+            ClientResourceData.setEnergy(currentEnergy);
+            ClientResourceData.setMana(currentMana);
         });
         return true;
     }

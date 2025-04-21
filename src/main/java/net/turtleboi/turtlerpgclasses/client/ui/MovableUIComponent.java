@@ -2,6 +2,7 @@ package net.turtleboi.turtlerpgclasses.client.ui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -34,14 +35,13 @@ public class MovableUIComponent extends AbstractWidget {
     }
 
     @Override
-    public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (this.isDragging) {
-            this.x += mouseX - this.lastMouseX;
-            this.y += mouseY - this.lastMouseY;
+            this.setX(mouseX - this.lastMouseX);
+            this.setY(mouseY - this.lastMouseY);
             this.lastMouseX = mouseX;
             this.lastMouseY = mouseY;
         }
-        super.renderButton(poseStack, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -64,6 +64,11 @@ public class MovableUIComponent extends AbstractWidget {
         return false;
     }
 
+    @Override
+    protected void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
+
+    }
+
     public String getIdentifier() {
         return identifier;
     }
@@ -83,38 +88,33 @@ public class MovableUIComponent extends AbstractWidget {
 
         switch (anchor) {
             case TOP_LEFT:
-                this.x = x;
-                this.y = y;
+                this.setX(x);
+                this.setY(y);
                 break;
             case TOP_RIGHT:
-                this.x = screenWidth - x - this.width;
-                this.y = y;
+                this.setX(screenWidth - x - this.width);
+                this.setY(y);
                 break;
             case BOTTOM_LEFT:
-                this.x = x;
-                this.y = screenHeight - y - this.height;
+                this.setX(x);
+                this.setY(screenHeight - y - this.height);
                 break;
             case BOTTOM_RIGHT:
-                this.x = screenWidth - x - this.width;
-                this.y = screenHeight - y - this.height;
+                this.setX(screenWidth - x - this.width);
+                this.setY(screenHeight - y - this.height);
                 break;
             case TOP_CENTER:
-                this.x = (screenWidth / 2) + x - (this.width / 2);
-                this.y = y;
+                this.setX((screenWidth / 2) + x - (this.width / 2));
+                this.setY(y);
                 break;
             case BOTTOM_CENTER:
-                this.x = (screenWidth / 2) + x - (this.width / 2);
-                this.y = screenHeight - y - this.height;
+                this.setX((screenWidth / 2) + x - (this.width / 2));
+                this.setY(screenHeight - y - this.height);
                 break;
             case CENTER:
-                this.x = (screenWidth / 2) + x - (this.width / 2);
-                this.y = (screenHeight / 2) + y - (this.height / 2);
+                this.setX((screenWidth / 2) + x - (this.width / 2));
+                this.setY((screenHeight / 2) + y - (this.height / 2));
                 break;
         }
-    }
-
-    @Override
-    public void updateNarration(@NotNull NarrationElementOutput narrationElementOutput) {
-
     }
 }

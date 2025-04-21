@@ -131,7 +131,7 @@ public class ModEvents {
                 newTalentStates.loadNBTData(compound);
             });
         });
-        if (player.level.isClientSide()) {
+        if (player.level().isClientSide()) {
             CooldownOverlay.initializeSlots(player);
             ResourceOverlay.initializeResourceBars(player);
         }
@@ -230,7 +230,7 @@ public class ModEvents {
         if (targetEntity instanceof Player player) {
             if (player.hasEffect(ModEffects.STEEL_BARBS.get()) && sourceEntity instanceof LivingEntity attacker) {
                 float thornsDamage = 1.0F + (player.getArmorValue() / 3.0F);
-                attacker.hurt(DamageSource.thorns(player), thornsDamage);
+                attacker.hurt(player.level().damageSources().thorns(player), thornsDamage);
             }
 
             SecondWindTalent secondWindTalent = new SecondWindTalent();
@@ -269,14 +269,14 @@ public class ModEvents {
 
             WarlordsPresenceTalent warlordsPresenceTalent = new WarlordsPresenceTalent();
             if (warlordsPresenceTalent.isActive(player)) {
-                Level level = player.level;
+                Level level = player.level();
                 AABB warlordAABB = new AABB(player.blockPosition()).inflate(warlordsPresenceTalent.getWarlordsRadius());
                 AABB wrathAABB = new AABB(player.blockPosition()).inflate(warlordsPresenceTalent.getWrathRadius());
 
                 level.getEntitiesOfClass(Player.class, warlordAABB).forEach(ally -> {
                     if (PartyUtils.isAlly((ServerPlayer) player, (ServerPlayer) ally) && ally != player) {
                         float damage = event.getAmount();
-                        player.hurt(DamageSource.GENERIC, damage * 0.5f);
+                        player.hurt(player.level().damageSources().generic(), damage * 0.5f);
                         event.setAmount(damage * 0.5f);
                     }
                     if (PartyUtils.isAlly((ServerPlayer) player, (ServerPlayer) ally) || ally == player){
@@ -295,8 +295,9 @@ public class ModEvents {
                         if (player.hasEffect(ModEffects.WRATH.get())) {
                             float damage = event.getAmount();
                             event.setAmount(damage * 0.5f);
-                            assert sourceEntity != null;
-                            sourceEntity.hurt(DamageSource.GENERIC, damage * 0.25f);
+                            if (sourceEntity != null) {
+                                sourceEntity.hurt(player.level().damageSources().generic(), damage * 0.25f);
+                            }
                         }
                     }
                 });
@@ -422,7 +423,7 @@ public class ModEvents {
 
         WarlordsPresenceTalent warlordsPresenceTalent = new WarlordsPresenceTalent();
         if (warlordsPresenceTalent.isActive(player)) {
-            Level level = player.level;
+            Level level = player.level();
             AABB wrathAABB = new AABB(player.blockPosition()).inflate(warlordsPresenceTalent.getWrathRadius());
 
             if (player.hasEffect(ModEffects.WRATH.get())) {
@@ -463,7 +464,7 @@ public class ModEvents {
         if (currentRootedEffect != null) {
             UUID playerUUID = EffectUtils.getRootingPlayerUUID(entity);
             if (playerUUID != null) {
-                Player player = entity.level.getPlayerByUUID(playerUUID);
+                Player player = entity.level().getPlayerByUUID(playerUUID);
                 VineWhipTalent vineWhipTalent = new VineWhipTalent();
                 if (player != null && vineWhipTalent.isActive(player)) {
                     double rootDuration = 20 * vineWhipTalent.getRootDuration(vineWhipTalent.getPoints(player));
@@ -687,7 +688,7 @@ public class ModEvents {
                             double playerY = playerPos.y;
                             double targetY = targetPos.y;
 
-                            boolean isOnGround = serverPlayer.isOnGround();
+                            boolean isOnGround = serverPlayer.onGround();
 
                             if (isOnGround) {
                                 motion = motion.add(0, -0.1, 0);
@@ -782,15 +783,16 @@ public class ModEvents {
                         double xDirection = -Math.sin(Math.toRadians(yaw));
                         double zDirection = Math.cos(Math.toRadians(yaw));
                         Vec3 direction = new Vec3(xDirection, 0, zDirection).normalize();
+                        Vec3 center = playerPos.add(direction.scale(0.5d));
 
                         if (playerAbility.isStampeding()) {
                             Vec3 motion = direction.scale(1.0);
                             AABB boundingBox = serverPlayer.getBoundingBox().move(direction.scale(0.5)).inflate(1.0);
-                            List<LivingEntity> targets = serverPlayer.level.getEntitiesOfClass(LivingEntity.class, boundingBox);
+                            List<LivingEntity> targets = serverPlayer.level().getEntitiesOfClass(LivingEntity.class, boundingBox);
 
                             for (LivingEntity target : targets) {
                                 if (target != serverPlayer) {
-                                    target.hurt(DamageSource.playerAttack(serverPlayer), (float) damage);
+                                    target.hurt(serverPlayer.level().damageSources().playerAttack(serverPlayer), (float) damage);
                                     Vec3 knockback = new Vec3(direction.x, 0.1, direction.z).normalize().scale(1.5);
                                     target.setDeltaMovement(knockback);
                                 }
@@ -798,19 +800,20 @@ public class ModEvents {
                             boolean obstacleAbove = checkObstacles(serverPlayer, playerPos, direction, 2, 0);
                             boolean obstacleFrontFeet = checkObstacles(serverPlayer, playerPos, direction, 0, 0);
                             boolean obstacleFrontEyes = checkObstacles(serverPlayer, playerPos, direction, 1, 0);
-                            BlockPos pos1 = new BlockPos(playerPos.add(direction.scale(0.5)).add(-0.5, 0, 0));
-                            BlockPos pos2 = new BlockPos(playerPos.add(direction.scale(0.5)).add(0.5, 0, 0));
-                            BlockPos pos3 = new BlockPos(playerPos.add(direction.scale(0.5)).add(0, 0, -0.5));
-                            BlockPos pos4 = new BlockPos(playerPos.add(direction.scale(0.5)).add(0, 0, 0.5));
 
-                            boolean cornerObstacle1 = isObstacle(serverPlayer.level.getBlockState(pos1));
-                            boolean cornerObstacle2 = isObstacle(serverPlayer.level.getBlockState(pos2));
-                            boolean cornerObstacle3 = isObstacle(serverPlayer.level.getBlockState(pos3));
-                            boolean cornerObstacle4 = isObstacle(serverPlayer.level.getBlockState(pos4));
+                            BlockPos pos1 = BlockPos.containing(center.x() - 0.5, center.y(), center.z());
+                            BlockPos pos2 = BlockPos.containing(center.x() + 0.5, center.y(), center.z());
+                            BlockPos pos3 = BlockPos.containing(center.x(), center.y(),center.z() - 0.5);
+                            BlockPos pos4 = BlockPos.containing(center.x(), center.y(),center.z() + 0.5);
+
+                            boolean cornerObstacle1 = isObstacle(serverPlayer.level().getBlockState(pos1));
+                            boolean cornerObstacle2 = isObstacle(serverPlayer.level().getBlockState(pos2));
+                            boolean cornerObstacle3 = isObstacle(serverPlayer.level().getBlockState(pos3));
+                            boolean cornerObstacle4 = isObstacle(serverPlayer.level().getBlockState(pos4));
 
                             if (obstacleFrontFeet || cornerObstacle1 || cornerObstacle2 || cornerObstacle3 || cornerObstacle4 && !obstacleFrontEyes) {
-                                BlockPos topBlockPos = new BlockPos(playerPos.add(direction.scale(0.5)).add(0, 1, 0));
-                                if (serverPlayer.level.getBlockState(topBlockPos).isAir()) {
+                                BlockPos topBlockPos = BlockPos.containing(center).above();
+                                if (serverPlayer.level().getBlockState(topBlockPos).isAir()) {
                                     Vec3 nextPos = new Vec3(playerPos.x + direction.x, topBlockPos.getY(), playerPos.z + direction.z);
                                     serverPlayer.teleportTo(nextPos.x, nextPos.y, nextPos.z);
                                 }
@@ -871,9 +874,12 @@ public class ModEvents {
     private static boolean checkObstacles(ServerPlayer serverPlayer, Vec3 playerPos, Vec3 lookDirection, int yOffset, int zOffset, boolean lateral) {
         int[][] offsets = lateral ? new int[][]{{1, 1}, {-1, 1}} : new int[][]{{1, 0}, {0, 0}, {-1, 0}};
         for (int[] offset : offsets) {
-            BlockPos checkPos = new BlockPos(playerPos.add(lookDirection.scale(offset[0])).add(0, yOffset, zOffset * offset[1]));
+            Vec3 testPoint = playerPos
+                    .add(lookDirection.scale(offset[0]))
+                    .add(0, yOffset, offset[1] * zOffset);
+            BlockPos checkPos = BlockPos.containing(testPoint);
             //serverPlayer.sendSystemMessage(Component.literal("Checking block at " + checkPos + ": " + serverPlayer.level.getBlockState(checkPos).getBlock().getName().getString())); // Debug code
-            if (isObstacle(serverPlayer.level.getBlockState(checkPos))) {
+            if (isObstacle(serverPlayer.level().getBlockState(checkPos))) {
                 return true;
             }
         }
@@ -883,9 +889,12 @@ public class ModEvents {
     private static boolean checkFencesAndGates(ServerPlayer serverPlayer, Vec3 playerPos, Vec3 lookDirection) {
         int[][] offsets = new int[][]{{1, 0}, {1, 1}, {1, 2}, {0, 1}, {0, 2}, {-1, 0}, {-1, 1}, {-1, 2}};
         for (int[] offset : offsets) {
-            BlockPos checkPos = new BlockPos(playerPos.add(lookDirection.scale(offset[0])).add(0, offset[1], 0));
+            Vec3 testPoint = playerPos
+                    .add(lookDirection.scale(offset[0]))
+                    .add(0, offset[1], 0);
+            BlockPos checkPos = BlockPos.containing(testPoint);
             //serverPlayer.sendSystemMessage(Component.literal("Checking fence or gate at " + checkPos + ": " + serverPlayer.level.getBlockState(checkPos).getBlock().getName().getString())); // Debug code
-            if (isFenceOrGate(serverPlayer.level.getBlockState(checkPos))) {
+            if (isFenceOrGate(serverPlayer.level().getBlockState(checkPos))) {
                 return true;
             }
         }
@@ -903,7 +912,7 @@ public class ModEvents {
     }
 
     private static boolean isObstacle(BlockState blockState) {
-        return blockState.getMaterial().isSolid() && !blockState.getMaterial().isReplaceable() && !(blockState.getBlock() instanceof FenceBlock) && !(blockState.getBlock() instanceof FenceGateBlock);
+        return blockState.blocksMotion() && !blockState.canBeReplaced() && !(blockState.getBlock() instanceof FenceBlock) && !(blockState.getBlock() instanceof FenceGateBlock);
     }
 
     private static boolean isFenceOrGate(BlockState state) {
@@ -911,12 +920,13 @@ public class ModEvents {
     }
 
     private static boolean isAirInFront(ServerPlayer serverPlayer, Vec3 playerPos, Vec3 lookDirection) {
-        BlockPos checkPos = new BlockPos(playerPos.add(lookDirection.scale(1)));
-        return serverPlayer.level.getBlockState(checkPos).isAir();
+        Vec3 target = playerPos.add(lookDirection);
+        BlockPos checkPos = BlockPos.containing(target);
+        return serverPlayer.level().getBlockState(checkPos).isAir();
     }
 
     private static void spawnSmokeParticles(ServerPlayer player) {
-        Level level = player.level;
+        Level level = player.level();
         if (level instanceof ServerLevel) {
             double x = player.getX();
             double y = player.getY();

@@ -107,7 +107,7 @@ public class IntimidatingPresenceTalent extends ActiveAbility {
         int absorptionPerEnemy = getAbsorptionValue(talentPoints);
 
         double radius = 10.0;
-        List<LivingEntity> targets = player.level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(radius));
+        List<LivingEntity> targets = player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(radius));
 
         for (LivingEntity target : targets) {
             MobCategory category = target.getType().getCategory();

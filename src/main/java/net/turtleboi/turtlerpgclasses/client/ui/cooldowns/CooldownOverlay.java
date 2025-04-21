@@ -26,11 +26,11 @@ public class CooldownOverlay {
             KeyBinding.ACTIVE4
     };
 
-    public static final IGuiOverlay HUD_COOLDOWNS = (gui, poseStack, partialTick, width, height) -> {
+    public static final IGuiOverlay HUD_COOLDOWNS = (gui, guiGraphics, partialTick, width, height) -> {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
             for (CooldownSlot slot : cooldownSlots) {
-                slot.render(poseStack, player);
+                slot.render(guiGraphics, player);
             }
         }
     };

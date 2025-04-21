@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 public class pathOfTheJuggernautSubclassNode extends ActiveTalentButton {
-    public pathOfTheJuggernautSubclassNode(TalentTree talentTree, Talent talent, int x, int y, int maxPoints, int requiredPoints, boolean alwaysActive, OnPress onPress) {
-        super(talentTree, talent, x, y, maxPoints, requiredPoints, alwaysActive, onPress);
+    public pathOfTheJuggernautSubclassNode(TalentTree talentTree, Talent talentClass, int x, int y, int maxPoints, int requiredPoints, boolean alwaysActive, OnPress onPress, CreateNarration createNarration) {
+        super(talentTree, talentClass, x, y, maxPoints, requiredPoints, alwaysActive, onPress, createNarration);
     }
 
     @Override

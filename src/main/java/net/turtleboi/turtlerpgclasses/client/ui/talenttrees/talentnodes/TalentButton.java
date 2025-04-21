@@ -2,6 +2,8 @@ package net.turtleboi.turtlerpgclasses.client.ui.talenttrees.talentnodes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -34,8 +36,8 @@ public abstract class TalentButton extends Button {
     public int requiredPoints;
     private final boolean alwaysActive;
 
-    public TalentButton(TalentTree talentTree, String identifier, int x, int y, int width, int height, int maxPoints, int requiredPoints, Component title, boolean alwaysActive, OnPress onPress) {
-        super(x, y, width, height, title, onPress);
+    public TalentButton(TalentTree talentTree, String identifier, int x, int y, int width, int height, int maxPoints, int requiredPoints, Component title, boolean alwaysActive, OnPress onPress, CreateNarration createNarration) {
+        super(x, y, width, height, title, onPress, createNarration);
         this.talentTree = talentTree;
         this.identifier = identifier;
         this.maxPoints = maxPoints;
@@ -104,14 +106,15 @@ public abstract class TalentButton extends Button {
         return alwaysActive;
     }
 
-    public void renderTooltip(PoseStack poseStack, int mouseX, int mouseY) {
+    public void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        Font font = Minecraft.getInstance().font;
         if (tooltipText != null && !tooltipText.isEmpty()) {
             assert Minecraft.getInstance().screen != null;
-            Minecraft.getInstance().screen.renderComponentTooltip(poseStack, tooltipText, mouseX, mouseY);
+            guiGraphics.renderComponentTooltip(font, tooltipText, mouseX, mouseY);
         } else {
             List<Component> defaultTooltip = Collections.singletonList(Component.literal("Default Tooltip"));
             assert Minecraft.getInstance().screen != null;
-            Minecraft.getInstance().screen.renderComponentTooltip(poseStack, defaultTooltip, mouseX, mouseY);
+            guiGraphics.renderComponentTooltip(font, defaultTooltip, mouseX, mouseY);
         }
     }
 
@@ -158,7 +161,6 @@ public abstract class TalentButton extends Button {
             });
         }
     }
-
 
     public void setButtonsToLock(List<TalentButton> buttons) {
         this.buttonsToLock = buttons;

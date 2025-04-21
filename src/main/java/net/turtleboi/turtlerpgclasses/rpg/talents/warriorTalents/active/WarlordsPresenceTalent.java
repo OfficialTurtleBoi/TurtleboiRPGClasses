@@ -46,7 +46,7 @@ public class WarlordsPresenceTalent extends ActiveAbility {
     @Override
     public boolean activate(Player player) {
         player.addEffect(new MobEffectInstance(ModEffects.WRATH.get(), getDuration(), 0));
-        Level level = player.level;
+        Level level = player.level();
         AABB aabb = new AABB(player.blockPosition()).inflate(getWrathRadius());
         int rallyDuration = (int) getRallyDuration() * 20;
         level.getEntitiesOfClass(Player.class, aabb).forEach(ally -> {
@@ -68,7 +68,7 @@ public class WarlordsPresenceTalent extends ActiveAbility {
     }
 
     public void applyWarlordsPresenceEffects(Player player) {
-        Level level = player.level;
+        Level level = player.level();
         AABB aabb = new AABB(player.blockPosition()).inflate(getWarlordsRadius());
 
         level.getEntitiesOfClass(Player.class, aabb).forEach(ally -> {

@@ -2,6 +2,9 @@ package net.turtleboi.turtlerpgclasses.client.ui.talenttrees;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.turtleboi.turtlerpgclasses.TurtleRPGClasses;
 import net.turtleboi.turtlerpgclasses.client.ClientClassData;
@@ -18,8 +21,7 @@ import net.turtleboi.turtlerpgclasses.rpg.talents.warriorTalents.active.Warlords
 
 import java.util.Arrays;
 import java.util.List;
-
-import static net.minecraft.client.gui.GuiComponent.blit;
+import java.util.function.Supplier;
 
 public class RangerTalentTree extends TalentTree {
     private static final ResourceLocation RANGER_TREE_CONNECTIONS = new ResourceLocation(TurtleRPGClasses.MOD_ID, "textures/gui/talents/warrior_tree_connections.png");
@@ -29,9 +31,8 @@ public class RangerTalentTree extends TalentTree {
     }
 
     @Override
-    protected void drawConnectionsTexture(PoseStack poseStack) {
-        RenderSystem.setShaderTexture(0, RANGER_TREE_CONNECTIONS);
-        blit(poseStack, this.connectionTextureX, this.connectionTextureY, 0, 0, 190, 350, 190, 350);
+    protected void drawConnectionsTexture(GuiGraphics guiGraphics) {
+        guiGraphics.blit(RANGER_TREE_CONNECTIONS, this.connectionTextureX, this.connectionTextureY, 0, 0, 190, 350, 190, 350);
     }
 
     @Override
@@ -47,7 +48,8 @@ public class RangerTalentTree extends TalentTree {
                 1,
                 0,
                 ("Ranger".equals(className)),
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(rangerClassNode, TalentButton.TalentState.ACTIVE);
 
         // Tier 2
@@ -59,7 +61,8 @@ public class RangerTalentTree extends TalentTree {
                 4,
                 0,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         SwiftHandsTalentNode swiftHandsTalentNode = new SwiftHandsTalentNode(
                 this,
                 new SwiftHandsTalent(),
@@ -68,7 +71,8 @@ public class RangerTalentTree extends TalentTree {
                 4,
                 0,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(weakPointsTalentNode, null, rangerClassNode);
         createTalentButton(swiftHandsTalentNode, null, rangerClassNode);
 
@@ -81,7 +85,8 @@ public class RangerTalentTree extends TalentTree {
                 3,
                 1,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         QuickDrawTalentNode quickDrawTalentNode = new QuickDrawTalentNode(
                 this,
                 new QuickDrawTalent(),
@@ -90,7 +95,8 @@ public class RangerTalentTree extends TalentTree {
                 3,
                 1,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         VigorTalentNode vigorTalentNode = new VigorTalentNode(
                 this,
                 new VigorTalent(),
@@ -99,7 +105,8 @@ public class RangerTalentTree extends TalentTree {
                 3,
                 1,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(lethalityTalentNode, null, weakPointsTalentNode, swiftHandsTalentNode);
         createTalentButton(quickDrawTalentNode, null, weakPointsTalentNode, swiftHandsTalentNode);
         createTalentButton(vigorTalentNode, null, weakPointsTalentNode, swiftHandsTalentNode);
@@ -113,7 +120,8 @@ public class RangerTalentTree extends TalentTree {
                 1,
                 10,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         RoguesAxiomSubclassNode roguesAxiomSubclassNode = new RoguesAxiomSubclassNode(
                 this,
                 new RoguesAxiomSubclass(),
@@ -122,7 +130,8 @@ public class RangerTalentTree extends TalentTree {
                 1,
                 10,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         BeastmastersAxiomSubclassNode beastmastersAxiomSubclassNode = new BeastmastersAxiomSubclassNode(
                 this,
                 new BeastmastersAxiomSubclass(),
@@ -131,7 +140,8 @@ public class RangerTalentTree extends TalentTree {
                 1,
                 10,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(marksmansAxiomSubclassNode, null, lethalityTalentNode, quickDrawTalentNode, vigorTalentNode);
         createTalentButton(roguesAxiomSubclassNode, null, lethalityTalentNode, quickDrawTalentNode, vigorTalentNode);
         createTalentButton(beastmastersAxiomSubclassNode, null, lethalityTalentNode, quickDrawTalentNode, vigorTalentNode);
@@ -149,25 +159,28 @@ public class RangerTalentTree extends TalentTree {
                 4,
                 12,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         EvasiveManeuversTalentNode evasiveManeuversTalentNode = new EvasiveManeuversTalentNode(
                 this,
                 new EvasiveManeuversTalent(),
                 centerX - buttonSize,
                 startY + (verticalSpacing * 4),
-                4,
+                5,
                 12,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         VineWhipTalentNode vineWhipTalentNode = new VineWhipTalentNode(
                 this,
                 new VineWhipTalent(),
                 centerX + buttonSize,
                 startY + (verticalSpacing * 4),
-                4,
+                5,
                 12,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         MarathonerTalentNode marathonerTalentNode = new MarathonerTalentNode(
                 this,
                 new MarathonerTalent(),
@@ -176,7 +189,8 @@ public class RangerTalentTree extends TalentTree {
                 4,
                 12,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(quickRecoveryTalentNode, null, marksmansAxiomSubclassNode, roguesAxiomSubclassNode, beastmastersAxiomSubclassNode);
         createTalentButton(evasiveManeuversTalentNode, null, marksmansAxiomSubclassNode, roguesAxiomSubclassNode, beastmastersAxiomSubclassNode);
         createTalentButton(vineWhipTalentNode, null, marksmansAxiomSubclassNode, roguesAxiomSubclassNode, beastmastersAxiomSubclassNode);
@@ -194,7 +208,8 @@ public class RangerTalentTree extends TalentTree {
                 5,
                 16,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         EffecientEnergyTalentNode effecientEnergyTalentNode = new EffecientEnergyTalentNode(
                 this,
                 new EfficientEnergyTalent(),
@@ -203,7 +218,8 @@ public class RangerTalentTree extends TalentTree {
                 5,
                 16,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         FocusedStrikesTalentNode focusedStrikesTalentNode = new FocusedStrikesTalentNode(
                 this,
                 new FocusedStrikesTalent(),
@@ -212,7 +228,8 @@ public class RangerTalentTree extends TalentTree {
                 5,
                 16,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(steadyBreathingTalentNode, null, quickRecoveryTalentNode, evasiveManeuversTalentNode, vineWhipTalentNode, marathonerTalentNode);
         createTalentButton(effecientEnergyTalentNode, null, quickRecoveryTalentNode, evasiveManeuversTalentNode, vineWhipTalentNode, marathonerTalentNode);
         createTalentButton(focusedStrikesTalentNode, null, quickRecoveryTalentNode, evasiveManeuversTalentNode, vineWhipTalentNode, marathonerTalentNode);
@@ -229,7 +246,8 @@ public class RangerTalentTree extends TalentTree {
                 1,
                 21,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         EtherealArrowTalentNode etherealArrowTalentNode = new EtherealArrowTalentNode(
                 this,
                 new EtherealArrowTalent(),
@@ -238,7 +256,8 @@ public class RangerTalentTree extends TalentTree {
                 1,
                 21,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(huntersMarkTalentNode, null, steadyBreathingTalentNode, effecientEnergyTalentNode, focusedStrikesTalentNode);
         createTalentButton(etherealArrowTalentNode, null, steadyBreathingTalentNode, effecientEnergyTalentNode, focusedStrikesTalentNode);
 
@@ -254,7 +273,8 @@ public class RangerTalentTree extends TalentTree {
                 3,
                 25,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         KillStreakTalentNode killStreakTalentNode = new KillStreakTalentNode(
                 this,
                 new KillStreakTalent(),
@@ -263,7 +283,8 @@ public class RangerTalentTree extends TalentTree {
                 3,
                 25,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         EtherealVolleyTalentNode etherealVolleyTalentNode = new EtherealVolleyTalentNode(
                 this,
                 new EtherealVolleyTalent(),
@@ -272,7 +293,8 @@ public class RangerTalentTree extends TalentTree {
                 3,
                 25,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         HeatSeekingTalentNode heatSeekingTalentNode = new HeatSeekingTalentNode(
                 this,
                 new HeatSeekingTalent(),
@@ -281,7 +303,8 @@ public class RangerTalentTree extends TalentTree {
                 3,
                 25,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
         createTalentButton(favoredEnemyTalentNode, null, huntersMarkTalentNode);
         createTalentButton(killStreakTalentNode, null, huntersMarkTalentNode);
         createTalentButton(etherealVolleyTalentNode, null, etherealArrowTalentNode);
@@ -301,7 +324,8 @@ public class RangerTalentTree extends TalentTree {
                 1,
                 28,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
 
         RenownedHunterTalentNode renownedHunterTalentNode = new RenownedHunterTalentNode(
                 this,
@@ -311,7 +335,8 @@ public class RangerTalentTree extends TalentTree {
                 5,
                 28,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
 
         WindrunnerTalentNode windrunnerTalentNode = new WindrunnerTalentNode(
                 this,
@@ -321,7 +346,8 @@ public class RangerTalentTree extends TalentTree {
                 1,
                 28,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
 
         createTalentButton(guerrillaWarfareTalentNode, null, favoredEnemyTalentNode, killStreakTalentNode, etherealVolleyTalentNode, heatSeekingTalentNode);
         createTalentButton(renownedHunterTalentNode, null, favoredEnemyTalentNode, killStreakTalentNode, etherealVolleyTalentNode, heatSeekingTalentNode);
@@ -339,7 +365,8 @@ public class RangerTalentTree extends TalentTree {
                 1,
                 40,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
 
         GuardiansOathTalentNode warriorGuardiansOathTalent = new GuardiansOathTalentNode(
                 this,
@@ -349,7 +376,8 @@ public class RangerTalentTree extends TalentTree {
                 1,
                 40,
                 false,
-                button -> {});
+                button -> {},
+                (Supplier<MutableComponent> def) -> Component.empty());
 
         createTalentButton(warriorWarlordsPresenceTalent, null, guerrillaWarfareTalentNode, renownedHunterTalentNode, windrunnerTalentNode);
         createTalentButton(warriorGuardiansOathTalent, null, guerrillaWarfareTalentNode, renownedHunterTalentNode, windrunnerTalentNode);

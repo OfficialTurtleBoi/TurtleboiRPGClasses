@@ -3,7 +3,7 @@ package net.turtleboi.turtlerpgclasses.client.ui.resources;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.turtleboi.turtlerpgclasses.TurtleRPGClasses;
@@ -32,18 +32,17 @@ public class ResourceBar {
         this.isMain = isMain;
     }
 
-    public void render(PoseStack poseStack, Font font) {
-        RenderSystem.setShaderTexture(0, resourceBars);
-        GuiComponent.blit(poseStack, x, y, 0, barTypeYOffset, barWidth, barHeight, 80, 90);
-        GuiComponent.blit(poseStack, x + barXOffset, y, barXOffset, barTypeYOffset + barHeight, (int) filledWidth, barHeight, 80, 90);
+    public void render(GuiGraphics guiGraphics, Font font) {
+        guiGraphics.blit(resourceBars, x, y, 0, barTypeYOffset, barWidth, barHeight, 80, 90);
+        guiGraphics.blit(resourceBars, x + barXOffset, y, barXOffset, barTypeYOffset + barHeight, (int) filledWidth, barHeight, 80, 90);
         int textWidth = font.width(text) / 2;
         int textX = x + (barWidth / 2) - textWidth;
-        int textY = y + (barHeight / 2); // Adjust textY to center text vertically
-        font.draw(poseStack, text, textX - 1, textY, 0x330000);
-        font.draw(poseStack, text, textX + 1, textY, 0x330000);
-        font.draw(poseStack, text, textX, textY - 1, 0x330000);
-        font.draw(poseStack, text, textX, textY + 1, 0x330000);
-        font.draw(poseStack, text, textX, textY, textColor);
+        int textY = y + (barHeight / 2);
+        guiGraphics.drawString(font, text, textX - 1, textY, 0x330000, false);
+        guiGraphics.drawString(font, text, textX + 1, textY, 0x330000, false);
+        guiGraphics.drawString(font, text, textX, textY - 1, 0x330000, false);
+        guiGraphics.drawString(font, text, textX, textY + 1, 0x330000, false);
+        guiGraphics.drawString(font, text, textX, textY, textColor, false);
     }
 
     public void setPosition(int x, int y) {

@@ -71,13 +71,13 @@ public class UnleashFuryTalent extends ActiveAbility {
     @Override
     public boolean activate(Player player) {
         double RANGE = 3.0;
-        List<Entity> nearbyEntities = player.level.getEntitiesOfClass(Entity.class, new AABB(
+        List<Entity> nearbyEntities = player.level().getEntitiesOfClass(Entity.class, new AABB(
                 player.getX() - RANGE, player.getY() - RANGE, player.getZ() - RANGE,
                 player.getX() + RANGE, player.getY() + RANGE, player.getZ() + RANGE));
 
         for (Entity entity : nearbyEntities) {
             if (entity instanceof LivingEntity livingEntity && entity != player && !isAlly(player, livingEntity)) {
-                entity.hurt(DamageSource.playerAttack(player), (float) getDamage());
+                entity.hurt(player.level().damageSources().playerAttack(player), (float) getDamage());
                 BleedEffect.applyOrAmplifyBleed(livingEntity, getBleedDurationTicks(), 0, player);
             }
         }
@@ -106,7 +106,7 @@ public class UnleashFuryTalent extends ActiveAbility {
         UnleashFuryEntity unleashFuryEntity = new UnleashFuryEntity(CoreEntities.UNLEASH_FURY.get(), level);
         unleashFuryEntity.setOwner(player);
         unleashFuryEntity.setYRot(player.getYRot());
-        player.level.addFreshEntity(unleashFuryEntity);
+        player.level().addFreshEntity(unleashFuryEntity);
     }
 
     @Override

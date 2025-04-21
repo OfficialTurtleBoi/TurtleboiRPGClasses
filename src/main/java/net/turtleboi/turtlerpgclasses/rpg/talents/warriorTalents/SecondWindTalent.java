@@ -86,7 +86,7 @@ public class SecondWindTalent extends Talent {
 
     private void applyKnockback(Player player) {
         AABB aabb = new AABB(player.blockPosition()).inflate(3.0);
-        List<Entity> entities = player.level.getEntities(player, aabb, entity -> entity instanceof LivingEntity && entity != player);
+        List<Entity> entities = player.level().getEntities(player, aabb, entity -> entity instanceof LivingEntity && entity != player);
         for (Entity entity : entities) {
             if (entity instanceof LivingEntity) {
                 MobCategory category = entity.getType().getCategory();

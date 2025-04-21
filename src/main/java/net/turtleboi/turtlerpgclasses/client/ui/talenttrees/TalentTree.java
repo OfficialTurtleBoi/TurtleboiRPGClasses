@@ -3,21 +3,19 @@ package net.turtleboi.turtlerpgclasses.client.ui.talenttrees;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.LazyOptional;
 import net.turtleboi.turtlerpgclasses.TurtleRPGClasses;
 import net.turtleboi.turtlerpgclasses.capabilities.talents.TalentStates;
 import net.turtleboi.turtlerpgclasses.capabilities.talents.TalentStatesProvider;
-import net.turtleboi.turtlerpgclasses.client.ClientClassData;
 import net.turtleboi.turtlerpgclasses.client.ui.talenttrees.talentnodes.TalentButton;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-
-import static net.minecraft.client.gui.GuiComponent.blit;
 
 public abstract class TalentTree {
     protected static final int buttonSize = 26;
@@ -95,38 +93,40 @@ public abstract class TalentTree {
         this.connectionTextureX = posX + (width / 2) - 95;
     }
 
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        draw9SliceBackground(poseStack, posX, posY, posX + width, posY + height);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        draw9SliceBackground(guiGraphics, posX, posY, posX + width, posY + height);
 
         enableScissor(posX, posY, width, height);
-        drawConnectionsTexture(poseStack);
+        drawConnectionsTexture(guiGraphics);
 
         updateVisibleButtons();
 
         for (TalentButton button : visibleButtons) {
-            button.renderButton(poseStack, mouseX, mouseY, partialTicks);
+            button.render(guiGraphics, mouseX, mouseY, partialTicks);
         }
 
         disableScissor();
 
-        draw9SliceBorder(poseStack, posX, posY, posX + width, posY + height);
+        draw9SliceBorder(guiGraphics, posX, posY, posX + width, posY + height);
 
         if (isWorkInProgress) {
-            renderWorkInProgressMessage(poseStack);
+            renderWorkInProgressMessage(guiGraphics);
         }
-        collectTooltips(mouseX, mouseY);
+        collectTooltips(guiGraphics, mouseX, mouseY);
     }
 
-    private void renderWorkInProgressMessage(PoseStack poseStack) {
+    private void renderWorkInProgressMessage(GuiGraphics guiGraphics) {
         Minecraft minecraft = Minecraft.getInstance();
         String message = "Work in Progress";
-        int textWidth = minecraft.font.width(message);
+        PoseStack poseStack = guiGraphics.pose();
+        Font font = Minecraft.getInstance().font;
+        int textWidth = font.width(message);
         int x = posX + (width / 2) - (textWidth / 2);
         int y = posY + (height / 2) - (minecraft.font.lineHeight / 2);
 
         poseStack.pushPose();
         poseStack.translate(0, 0, 200);
-        minecraft.font.draw(poseStack, message, x, y, 0xFFAAAAAA);
+        guiGraphics.drawString(font, message, x, y, 0xFFAAAAAA);
         poseStack.popPose();
     }
 
@@ -136,11 +136,11 @@ public abstract class TalentTree {
         }
     }
 
-    private void collectTooltips(int mouseX, int mouseY) {
+    private void collectTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         tooltipRenderers.clear();
         for (TalentButton button : visibleButtons) {
             if (button.isMouseOver(mouseX, mouseY) && isInsideDraggableArea(mouseX, mouseY)) {
-                tooltipRenderers.add(() -> button.renderTooltip(new PoseStack(), mouseX, mouseY));
+                tooltipRenderers.add(() -> button.renderTooltip(guiGraphics, mouseX, mouseY));
             }
         }
     }
@@ -161,14 +161,14 @@ public abstract class TalentTree {
     }
 
     private boolean isWithinVisibleArea(TalentButton button) {
-        int buttonBottom = button.y + buttonSize;
-        int buttonTop = button.y;
+        int buttonBottom = button.getY() + buttonSize;
+        int buttonTop = button.getY();
         int visibleBottom = posY + height;
         int visibleTop = posY;
         return buttonBottom > visibleTop && buttonTop < visibleBottom;
     }
 
-    protected abstract void drawConnectionsTexture(PoseStack poseStack);
+    protected abstract void drawConnectionsTexture(GuiGraphics guiGraphics);
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 || button == 1) {
@@ -219,9 +219,8 @@ public abstract class TalentTree {
     }
 
     private void updateButtonPositions() {
-        // Ensure the list is not empty before proceeding
         if (talentButtons.isEmpty()) {
-            return; // Exit the method early if there are no buttons to update
+            return;
         }
 
         int treeHeight = (verticalSpacing * 9) + buttonSize + 7;
@@ -229,70 +228,67 @@ public abstract class TalentTree {
         int minY = posY + 13 - (treeHeight - visibleAreaHeight);
         int maxY = posY + 13;
 
-        // Safely access the first element after checking that the list is not empty
-        int newYPosition = Math.min(maxY, Math.max(minY, talentButtons.get(0).y + this.scrollY));
-        int offset = newYPosition - talentButtons.get(0).y;
+        int firstY = talentButtons.get(0).getY();
+        int targetFirstY = Math.min(maxY, Math.max(minY, firstY + this.scrollY));
+        int offset = targetFirstY - firstY;
 
         for (TalentButton button : talentButtons) {
-            button.y += offset;
+            button.setY(button.getY() + offset);
         }
 
         this.connectionTextureY += offset;
         this.scrollY = 0;
     }
 
-
     private boolean isInsideDraggableArea(double mouseX, double mouseY) {
         return mouseX >= posX && mouseX <= posX + width && mouseY >= posY && mouseY <= posY + height;
     }
 
-    protected void draw9SliceBackground(PoseStack poseStack, int x1, int y1, int x2, int y2) {
-        RenderSystem.setShaderTexture(0, backgroundTexture);
-        blit(poseStack, x1, y1, 0, 0, 16, 16, 48, 48);
-        blit(poseStack, x2 - 16, y1, 32, 0, 16, 16, 48, 48);
-        blit(poseStack, x1, y2 - 16, 0, 32, 16, 16, 48, 48);
-        blit(poseStack, x2 - 16, y2 - 16, 32, 32, 16, 16, 48, 48);
+    protected void draw9SliceBackground(GuiGraphics guiGraphics, int x1, int y1, int x2, int y2) {
+        guiGraphics.blit(backgroundTexture, x1, y1, 0, 0, 16, 16, 48, 48);
+        guiGraphics.blit(backgroundTexture, x2 - 16, y1, 32, 0, 16, 16, 48, 48);
+        guiGraphics.blit(backgroundTexture, x1, y2 - 16, 0, 32, 16, 16, 48, 48);
+        guiGraphics.blit(backgroundTexture, x2 - 16, y2 - 16, 32, 32, 16, 16, 48, 48);
         for (int x = x1 + 16; x < x2 - 16; x += 16) {
-            blit(poseStack, x, y1, 16, 0, 16, 16, 48, 48);
-            blit(poseStack, x, y2 - 16, 16, 32, 16, 16, 48, 48);
+            guiGraphics.blit(backgroundTexture, x, y1, 16, 0, 16, 16, 48, 48);
+            guiGraphics.blit(backgroundTexture, x, y2 - 16, 16, 32, 16, 16, 48, 48);
         }
         for (int y = y1 + 16; y < y2 - 16; y += 16) {
-            blit(poseStack, x1, y, 0, 16, 16, 16, 48, 48);
-            blit(poseStack, x2 - 16, y, 32, 16, 16, 16, 48, 48);
+            guiGraphics.blit(backgroundTexture, x1, y, 0, 16, 16, 16, 48, 48);
+            guiGraphics.blit(backgroundTexture, x2 - 16, y, 32, 16, 16, 16, 48, 48);
         }
         for (int x = x1 + 16; x < x2 - 16; x += 16) {
             for (int y = y1 + 16; y < y2 - 16; y += 16) {
-                blit(poseStack, x, y, 16, 16, 16, 16, 48, 48);
+                guiGraphics.blit(backgroundTexture, x, y, 16, 16, 16, 16, 48, 48);
             }
         }
     }
 
-    protected void draw9SliceBorder(PoseStack poseStack, int x1, int y1, int x2, int y2) {
-        RenderSystem.setShaderTexture(0, borderTexture);
-        blit(poseStack, x1, y1, 0, 0, 16, 16, 48, 48);
-        blit(poseStack, x2 - 16, y1, 32, 0, 16, 16, 48, 48);
-        blit(poseStack, x1, y2 - 16, 0, 32, 16, 16, 48, 48);
-        blit(poseStack, x2 - 16, y2 - 16, 32, 32, 16, 16, 48, 48);
+    protected void draw9SliceBorder(GuiGraphics guiGraphics, int x1, int y1, int x2, int y2) {
+        guiGraphics.blit(borderTexture, x1, y1, 0, 0, 16, 16, 48, 48);
+        guiGraphics.blit(borderTexture, x2 - 16, y1, 32, 0, 16, 16, 48, 48);
+        guiGraphics.blit(borderTexture, x1, y2 - 16, 0, 32, 16, 16, 48, 48);
+        guiGraphics.blit(borderTexture, x2 - 16, y2 - 16, 32, 32, 16, 16, 48, 48);
         for (int x = x1 + 16; x < x2 - 16; x += 16) {
-            blit(poseStack, x, y1, 16, 0, 16, 16, 48, 48);
-            blit(poseStack, x, y2 - 16, 16, 32, 16, 16, 48, 48);
+            guiGraphics.blit(borderTexture, x, y1, 16, 0, 16, 16, 48, 48);
+            guiGraphics.blit(borderTexture, x, y2 - 16, 16, 32, 16, 16, 48, 48);
         }
         for (int y = y1 + 16; y < y2 - 16; y += 16) {
-            blit(poseStack, x1, y, 0, 16, 16, 16, 48, 48);
-            blit(poseStack, x2 - 16, y, 32, 16, 16, 16, 48, 48);
+            guiGraphics.blit(borderTexture, x1, y, 0, 16, 16, 16, 48, 48);
+            guiGraphics.blit(borderTexture, x2 - 16, y, 32, 16, 16, 16, 48, 48);
         }
         for (int x = x1 + 16; x < x2 - 16; x += 16) {
             for (int y = y1 + 16; y < y2 - 16; y += 16) {
-                blit(poseStack, x, y, 16, 16, 16, 16, 48, 48);
+                guiGraphics.blit(borderTexture, x, y, 16, 16, 16, 16, 48, 48);
             }
         }
     }
 
     private void enableScissor(int x, int y, int width, int height) {
-        Minecraft mc = Minecraft.getInstance();
-        double scale = mc.getWindow().getGuiScale();
+        Minecraft minecraft = Minecraft.getInstance();
+        double scale = minecraft.getWindow().getGuiScale();
         int scissorX = (int) (x * scale);
-        int scissorY = (int) (mc.getWindow().getScreenHeight() - (y + height) * scale);
+        int scissorY = (int) (minecraft.getWindow().getScreenHeight() - (y + height) * scale);
         int scissorWidth = (int) (width * scale);
         int scissorHeight = (int) (height * scale);
         RenderSystem.enableScissor(scissorX, scissorY, scissorWidth, scissorHeight);

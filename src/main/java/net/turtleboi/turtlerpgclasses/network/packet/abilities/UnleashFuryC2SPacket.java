@@ -31,8 +31,6 @@ public class UnleashFuryC2SPacket {
         context.enqueueWork(() -> {
             // We're on the server :)
             ServerPlayer player = context.getSender();
-            assert player != null;
-            ServerLevel level = player.getLevel();
             if (player == null) return;
             player.getCapability(PlayerResourceProvider.PLAYER_RESOURCE).ifPresent(playerResource -> {
                 ModNetworking.sendToPlayer(

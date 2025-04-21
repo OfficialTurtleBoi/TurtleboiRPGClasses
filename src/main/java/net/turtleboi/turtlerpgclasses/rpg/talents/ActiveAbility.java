@@ -39,7 +39,7 @@ public abstract class ActiveAbility extends Talent {
 
     public long getAbilityCooldownTime(Player player) {
         String key = getAbilityKey(player);
-        return Math.max(0, abilityCooldowns.getOrDefault(key, 0L) - player.level.getGameTime());
+        return Math.max(0, abilityCooldowns.getOrDefault(key, 0L) - player.level().getGameTime());
     }
 
     public double getCooldownProgress(Player player) {
@@ -56,13 +56,13 @@ public abstract class ActiveAbility extends Talent {
         double cooldownReductionPercentage = player.getAttributeValue(CoreAttributes.COOLDOWN_REDUCTION.get()) / 100.0;
         int adjustedCooldown = (int) (baseCooldownTicks * cooldownReductionPercentage);
         String key = getAbilityKey(player);
-        abilityCooldowns.put(key, player.level.getGameTime() + adjustedCooldown);
+        abilityCooldowns.put(key, player.level().getGameTime() + adjustedCooldown);
         resetCooldownFlags.put(key, false);
     }
 
     public void resetAbilityCooldown(Player player) {
         String key = getAbilityKey(player);
-        abilityCooldowns.put(key, player.level.getGameTime());
+        abilityCooldowns.put(key, player.level().getGameTime());
     }
 
     public void setCooldownResetFlag(Player player, boolean value) {
@@ -77,12 +77,12 @@ public abstract class ActiveAbility extends Talent {
 
     public void setAbilityOnDuration(Player player, int durationTicks) {
         String key = getAbilityKey(player);
-        durationEndTimes.put(key, player.level.getGameTime() + durationTicks);
+        durationEndTimes.put(key, player.level().getGameTime() + durationTicks);
     }
 
     public long getAbilityDurationTime(Player player) {
         String key = getAbilityKey(player);
-        return Math.max(0, durationEndTimes.getOrDefault(key, 0L) - player.level.getGameTime());
+        return Math.max(0, durationEndTimes.getOrDefault(key, 0L) - player.level().getGameTime());
     }
 
     public boolean isDurationActive(Player player) {
@@ -150,8 +150,8 @@ public abstract class ActiveAbility extends Talent {
             if (hasEnoughResources && abilityIsOffCooldown(player)) {
                 boolean activated = activate(player);
                 if (activated) {
-                    playAbilitySound(player, player.level);
-                    spawnAbilityEntity(player, player.level);
+                    playAbilitySound(player, player.level());
+                    spawnAbilityEntity(player, player.level());
                     player.sendSystemMessage(Component.literal("Used " + getName()));
                     for (Map.Entry<String, Integer> entry : resourceCosts.entrySet()) {
                         String resource = entry.getKey();
@@ -176,8 +176,8 @@ public abstract class ActiveAbility extends Talent {
             if (abilityIsOffCooldown(player)) {
                 boolean activated = activate(player);
                 if (activated) {
-                    playAbilitySound(player, player.level);
-                    spawnAbilityEntity(player, player.level);
+                    playAbilitySound(player, player.level());
+                    spawnAbilityEntity(player, player.level());
                     player.sendSystemMessage(Component.literal("Used " + getName()));
                     setAbilityOnCooldown(player, 20); // Reduced cooldown for creative mode
                     if (duration > 0) {

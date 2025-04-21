@@ -62,6 +62,6 @@ public class BrawlersTenacityTalent extends Talent {
 
     public void playEffectSound(Player player, int currentBonus) {
         float pitch = basePitch * (float)Math.pow(pitchIncrement, currentBonus);
-        player.level.playSound(null, player.blockPosition(), SoundEvents.ARMOR_EQUIP_CHAIN, SoundSource.PLAYERS, 0.5f, pitch);
+        player.level().playSound(null, player.blockPosition(), SoundEvents.ARMOR_EQUIP_CHAIN, SoundSource.PLAYERS, 0.5f, pitch);
     }
 }

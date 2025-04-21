@@ -39,7 +39,7 @@ public class VictoriousCryTalent extends ActiveAbility {
             }
 
             UUID targetId = target.getUUID();
-            long endTime = player.level.getGameTime() + bonusDuration;
+            long endTime = player.level().getGameTime() + bonusDuration;
 
             tauntEndTimeMap.put(targetId, endTime);
         });
@@ -80,7 +80,7 @@ public class VictoriousCryTalent extends ActiveAbility {
 
                 UUID targetId = target.getUUID();
                 Long tauntEndTime = tauntEndTimeMap.get(targetId);
-                if (player.level.getGameTime() <= tauntEndTime) {
+                if (player.level().getGameTime() <= tauntEndTime) {
                     int talentPoints = talentInstance.getPoints(player);
                     double damageBonus = talentInstance.getDamageBonus(talentPoints);
                     //target.hurt(DamageSource.playerAttack(player), originalDamage * (float) (1 + damageBonus));
@@ -108,7 +108,7 @@ public class VictoriousCryTalent extends ActiveAbility {
                 return;
             }
 
-            long currentTime = player.level.getGameTime();
+            long currentTime = player.level().getGameTime();
             long tauntEndTime = tauntEndTimeMap.get(targetId);
 
             if (currentTime <= tauntEndTime) {

@@ -2,21 +2,18 @@ package net.turtleboi.turtlerpgclasses.client.ui.talenttrees;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.LazyOptional;
 import net.turtleboi.turtlecore.network.CoreNetworking;
 import net.turtleboi.turtlerpgclasses.capabilities.talents.TalentStates;
 import net.turtleboi.turtlerpgclasses.capabilities.talents.TalentStatesProvider;
 import net.turtleboi.turtlerpgclasses.client.ui.talenttrees.talentnodes.TalentButton;
-import net.turtleboi.turtlecore.network.packet.experience.RemoveExperienceC2SPacket;
-import net.turtleboi.turtlecore.network.packet.experience.UpdateExperienceC2SPacket;
-import org.jetbrains.annotations.NotNull;
+import net.turtleboi.turtlecore.network.packet.util.experience.RemoveExperienceC2SPacket;
+import net.turtleboi.turtlecore.network.packet.util.experience.UpdateExperienceC2SPacket;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -188,15 +185,15 @@ public class TalentPointAllocator {
         }
     }
 
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        buyPointButton.render(poseStack, mouseX, mouseY, partialTicks);
-        subtractPointButton.render(poseStack, mouseX, mouseY, partialTicks);
-        confirmPurchaseButton.render(poseStack, mouseX, mouseY, partialTicks);
-        renderXPNeededString(poseStack, mouseX, mouseY);
-        renderTotalPointsString(poseStack);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        buyPointButton.render(guiGraphics, mouseX, mouseY, partialTicks);
+        subtractPointButton.render(guiGraphics, mouseX, mouseY, partialTicks);
+        confirmPurchaseButton.render(guiGraphics, mouseX, mouseY, partialTicks);
+        renderXPNeededString(guiGraphics);
+        renderTotalPointsString(guiGraphics);
     }
 
-    private void renderXPNeededString(PoseStack poseStack, int mouseX, int mouseY) {
+    private void renderXPNeededString(GuiGraphics guiGraphics) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
             int xpNeeded = calculateXPNeeded(pointsToBuy + (buyPointButton.isHoveredOrFocused() ? 1 : 0));
@@ -220,13 +217,13 @@ public class TalentPointAllocator {
             }
 
             if (pointsToBuy > 0 || buyPointButton.isHoveredOrFocused()) {
-                GuiComponent.drawString(poseStack, Minecraft.getInstance().font, xpCostString, xPosition, yPosition, color);
+                guiGraphics.drawString(Minecraft.getInstance().font, xpCostString, xPosition, yPosition, color);
             }
         }
     }
 
 
-    private void renderTotalPointsString(PoseStack poseStack) {
+    private void renderTotalPointsString(GuiGraphics guiGraphics) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
             player.getCapability(TalentStatesProvider.TALENT_STATES).ifPresent(talentStates -> {
@@ -242,10 +239,10 @@ public class TalentPointAllocator {
                     int stringAdditionalWidth = Minecraft.getInstance().font.width(additionalPointsString);
                     int xPostion2 = centerX - ((stringWidth + stringAdditionalWidth) / 2);
 
-                    GuiComponent.drawString(poseStack, Minecraft.getInstance().font, totalPointsString, xPostion2, yPostion, 0xFFFFFF);
-                    GuiComponent.drawString(poseStack, Minecraft.getInstance().font, additionalPointsString, xPostion2 + stringWidth, yPostion, 0x00FF00);
+                    guiGraphics.drawString(Minecraft.getInstance().font, totalPointsString, xPostion2, yPostion, 0xFFFFFF);
+                    guiGraphics.drawString(Minecraft.getInstance().font, additionalPointsString, xPostion2 + stringWidth, yPostion, 0x00FF00);
                 } else {
-                    GuiComponent.drawString(poseStack, Minecraft.getInstance().font, totalPointsString, xPosition, yPostion, 0xFFFFFF);
+                    guiGraphics.drawString(Minecraft.getInstance().font, totalPointsString, xPosition, yPostion, 0xFFFFFF);
                 }
             });
         }
@@ -273,12 +270,8 @@ public class TalentPointAllocator {
         }
 
         @Override
-        public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-            super.renderButton(poseStack, mouseX, mouseY, partialTicks);
-        }
+        protected void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
 
-        @Override
-        public void updateNarration(@NotNull NarrationElementOutput narrationElementOutput) {
         }
     }
 }
